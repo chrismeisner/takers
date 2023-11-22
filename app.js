@@ -3,12 +3,18 @@ const { MessagingResponse } = require('twilio').twiml;
 const Airtable = require('airtable');
 const axios = require('axios');
 const { Dropbox } = require('dropbox');
+const fetch = require('isomorphic-fetch'); // Required for Dropbox SDK
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 
-	// Dropbox setup
-const dbx = new Dropbox({ accessToken: 'sl.BqTQ5uZguySE4pKdewrrDI5GeTWk8lXMfjThYZTZf0Xfw1gJcbUQAnc91ydG6e7wuOpVLoU2uIWEtbH4PugrkSYk1zKWoR8-1Uoqa4IYKvLjWnoFKU5e0CkcLGPCShzFCBIwjKOAk27mN0XBxZt_Khw' });
+// Dropbox setup with OAuth 2.0
+const dbx = new Dropbox({
+	fetch: fetch,
+	clientId: 'ajk872ikp1a9lz2', // Replace with your App key
+	clientSecret: 'ce0sn830k5yr14e', // Replace with your App secret
+	accessToken: 'sl.BqVOGMDDFgIMRaE4hPKvCDYZDi24WhhrK9FN2VhIi0xlyqSk7u69lxycUjzbm-EKtrWQ4LDe46Q4OElnkbeMbTuwml4cR0cljkFZk_Kngyud8xK7oA1ut6Ff7H7gsjylCSpqqtDkk9bjYn1jQ1Ml4C0' // Replace with the access token obtained from Postman
+});
 
 // Airtable setup
 const airtableBase = new Airtable({ apiKey: 'patEF71MOUuCcneoW.d376f6081b53aab6900219831e0be8dd200458fb28443db567254fcd268a6268' }).base('app3n81ptFBce0myJ');
@@ -88,7 +94,6 @@ app.post('/receive-sms', async (req, res) => {
 		res.end(twiml.toString());
 	});
 });
-
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
