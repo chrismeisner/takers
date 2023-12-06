@@ -1,3 +1,6 @@
+require('dotenv').config(); // Load environment variables from .env file
+console.log(process.env.AIRTABLE_API_KEY);
+
 const express = require('express');
 const { MessagingResponse } = require('twilio').twiml;
 const Airtable = require('airtable');
@@ -8,32 +11,28 @@ const fetch = require('isomorphic-fetch'); // Required for Dropbox SDK
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 
-let accessToken = 'sl.BrDg5E4ccKvykWVsO_aA_YvQLOLi7IKUbCuG-NWWslFQZiHex-SW7bVRMn2lW63G9pwoG6doi5KP-B_40K_9Q0lxF_boj9Dp4e_XjB3o-TfY79HVLhT-dNus4BwCnc55vflBUBzAwIUECHEqyyZLGWA'; // Replace with your initial access token
-let refreshToken = '1KhWJN8mUvEAAAAAAAAAASS7pzNNdV4LtfQ0s82jg3VNWXXOUsOduhfRfFc2KOp1'; // Store your refresh token here
+// Use environment variables for access and refresh tokens
+let accessToken = process.env.DROPBOX_ACCESS_TOKEN; 
+let refreshToken = process.env.DROPBOX_REFRESH_TOKEN; 
 
-// Updated Dropbox setup
+// Dropbox setup with environment variables
 const dbx = new Dropbox({ 
 	fetch: fetch,
-	clientId: 'ajk872ikp1a9lz2', 
-	clientSecret: 'ce0sn830k5yr14e',
+	clientId: process.env.DROPBOX_CLIENT_ID, 
+	clientSecret: process.env.DROPBOX_CLIENT_SECRET,
 });
 
 dbx.auth.setRefreshToken(refreshToken);
 
-// Refresh access token if needed
-async function checkAndRefreshToken() {
-	if (dbx.auth.getAccessToken() === null || dbx.auth.isAccessTokenExpired()) {
-		await dbx.auth.refreshAccessToken();
-		accessToken = dbx.auth.getAccessToken();
-	}
-}
+// Airtable setup with API key from environment variable
+const airtableBase = new Airtable({ 
+	apiKey: process.env.AIRTABLE_API_KEY 
+}).base(process.env.AIRTABLE_BASE_ID);
 
-// Airtable setup
-const airtableBase = new Airtable({ apiKey: 'patEF71MOUuCcneoW.d376f6081b53aab6900219831e0be8dd200458fb28443db567254fcd268a6268' }).base('app3n81ptFBce0myJ');
+// Twilio credentials from environment variables
+const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
+const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
 
-// Twilio credentials for authentication
-const twilioAccountSid = 'AC0d824dda4621c3814c0385424f6d2197';
-const twilioAuthToken = '2e56a22e5e769707a13d5bb55ccf4e88';
 
 // Function to create a direct download link for a Dropbox file
 async function getDropboxSharedLink(path) {
