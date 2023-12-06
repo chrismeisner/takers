@@ -100,7 +100,7 @@ app.post('/receive-sms', async (req, res) => {
 
 		console.log(`Message from ${sender}: ${incomingMsg} added to Airtable`);
 		const twiml = new MessagingResponse();
-		twiml.message('Message received. Thank you!');
+		twiml.message('Received. Taker Bot is processing your message...');
 		res.writeHead(200, {'Content-Type': 'text/xml'});
 		res.end(twiml.toString());
 	});
